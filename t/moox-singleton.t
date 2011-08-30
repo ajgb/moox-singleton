@@ -1,6 +1,6 @@
 
 use strictures 1;
-use Test::More tests => 127;
+use Test::More tests => 138;
 
 {
     package My::Singleton::A;
@@ -167,6 +167,16 @@ use Test::More tests => 127;
 
         return $class->$orig(@args);
     };
+}
+{
+    package My::Singleton::E;
+    use Moo;
+}
+{
+    package My::Singleton::E::E1;
+    use Moo;
+    extends 'My::Singleton::E';
+    with 'MooX::Singleton';
 }
 
 # A
@@ -358,5 +368,25 @@ is $dd3, $dd32, 'single instance returned';
 is $dd32->attrib, 50, '$dd32->attrib correct';
 ok(My::Singleton::D::D3->_clear_instance, "instance cleared");
 ok(! My::Singleton::D::D3->_has_instance, "no instance exists");
+
+# E
+my $e = My::Singleton::E->new;
+isa_ok($e, "My::Singleton::E");
+ok(! My::Singleton::E->can('instance'), "parent class is not a singleton");
+
+my $e2 = My::Singleton::E->new;
+isa_ok($e2, "My::Singleton::E");
+isnt $e, $e2, 'different objects returned';
+
+ok(! My::Singleton::E::E1->_has_instance, "no instance created yet");
+my $ee1 = My::Singleton::E::E1->instance;
+isa_ok($ee1, "My::Singleton::E::E1");
+ok(My::Singleton::E::E1->_has_instance, "instance created");
+
+my $ee12 = My::Singleton::E::E1->instance;
+isa_ok($ee12, "My::Singleton::E::E1");
+is $ee1, $ee12, 'single instance returned';
+ok(My::Singleton::E::E1->_clear_instance, "instance cleared");
+ok(! My::Singleton::E::E1->_has_instance, "no instance exists");
 
 
