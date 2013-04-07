@@ -2,7 +2,8 @@
 package MooX::Singleton;
 # ABSTRACT: turn your Moo class into singleton
 
-use strictures 1;
+use strict;
+use warnings;
 use Role::Tiny;
 
 =head1 SYNOPSIS

@@ -1,5 +1,6 @@
 
-use strictures 1;
+use strict;
+use warnings;
 use Test::More tests => 138;
 
 {
